@@ -229,8 +229,11 @@ namespace InventorySystem.Items.Usables
 
         private static void ClientReceivedCooldown(ItemCooldownMessage msg)
         {
-            if (ReferenceHub.LocalHub?.inventory?.CurInstance is UsableItem usableItem &&
-                usableItem.ItemSerial == msg.ItemSerial)
+            // Look the item up by serial in the local inventory — the message can arrive
+            // before CurInstance switches to the newly equipped item.
+            if (ReferenceHub.TryGetLocalHub(out var hub) &&
+                hub.inventory.UserInventory.Items.TryGetValue(msg.ItemSerial, out var itemBase) &&
+                itemBase is UsableItem usableItem)
             {
                 usableItem.RemainingCooldown = msg.RemainingTime;
             }

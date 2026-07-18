@@ -16,25 +16,9 @@ namespace InventorySystem.Items.Usables
 
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public override string AlertText
-        {
-            get
-            {
-                if (IsWorn)
-                    return string.Empty;
-
-                float remaining = RemainingCooldown;
-
-                if (remaining <= 0f)
-                    return string.Empty;
-
-                return TranslationReader.GetFormatted("Facility",
-                    33,
-                    "Wait {0} until you can use {1} again.",
-                    TimeSpan.FromSeconds(remaining).ToString("mm\\:ss"),
-                    "SCP-268");
-            }
-        }
+        // Base getter also ticks RemainingCooldown down each frame — the original
+        // client inlines the full base body here after the IsWorn check.
+        public override string AlertText => IsWorn ? string.Empty : base.AlertText;
 
         public bool IsWorn
         {

@@ -205,29 +205,32 @@ namespace InventorySystem.Items.Firearms
 
         private void HandleEquipReload(RequestType rq)
         {
-            float elapsed = FirearmClientsideStateDatabase.ElapsedReloadState(ItemId.SerialNumber);
-            float time = Mathf.Min(elapsed, MaxReloadTime);
+            if (_fa == null)
+                return;
 
-            if (time > 0f)
-                AnimatorForceUpdate(Mathf.Min(time, 0.07f), true);
+            ushort serial = ItemId.SerialNumber;
 
-            switch (rq)
+            // The reload animation branches on the ammo state the weapon had when the reload
+            // BEGAN (empty vs tactical), but by now the spectator may already hold a newer
+            // status. Temporarily rewind to the pre-reload status so UpdateAnims pushes the
+            // right animator params, then restore the live status at the end.
+            FirearmStatus curStatus = _fa.Status;
+            _fa.Status = FirearmClientsideStateDatabase.GetPreReloadStatus(serial);
+            _fa.UpdateAnims();
+
+            // Replay the confirmed request (sets the reload/unload trigger), THEN fast-forward
+            // the animator by the time that already elapsed, in 0.07 s steps so state
+            // transitions aren't skipped over.
+            ProcessRequestMessage(new RequestMessage(serial, rq));
+
+            float time = Mathf.Min(FirearmClientsideStateDatabase.ElapsedReloadState(serial), MaxReloadTime);
+            while (time > 0f)
             {
-                case RequestType.Inspect:
-                    _fa?.InspectorModule?.OnInspect();
-                    break;
-                case RequestType.Dryfire:
-                    OnDryfired();
-                    break;
-                case RequestType.Reload:
-                    (_fa?.AmmoManagerModule as IAmmoManagerModule)?.ClientReload();
-                    break;
-                case RequestType.Unload:
-                    (_fa?.AmmoManagerModule as IAmmoManagerModule)?.ClientUnload();
-                    break;
-                case RequestType.ReloadStop:
-                    break;
+                AnimatorForceUpdate(Mathf.Min(time, 0.07f), true);
+                time -= 0.07f;
             }
+
+            _fa.Status = curStatus;
         }
 
         private void ProcessReceivedStatus(StatusMessage msg)
