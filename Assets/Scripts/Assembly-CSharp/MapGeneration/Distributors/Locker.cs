@@ -4,6 +4,7 @@ using Interactables;
 using Interactables.Interobjects.DoorUtils;
 using Interactables.Verification;
 using InventorySystem.Items.Keycards;
+using MEC;
 using Mirror;
 using NorthwoodLib.Pools;
 using UnityEngine;
@@ -58,6 +59,18 @@ namespace MapGeneration.Distributors
             {
                 return;
             }
+            Timing.RunCoroutine(_ServerFillChambers().CancelWith(gameObject));
+        }
+
+        private IEnumerator<float> _ServerFillChambers()
+        {
+            while (!SeedSynchronizer.MapGenerated)
+            {
+                yield return Timing.WaitForOneFrame;
+            }
+            yield return Timing.WaitForOneFrame;
+            yield return Timing.WaitForOneFrame;
+
             List<LockerChamber> list = new List<LockerChamber>(Chambers);
             if (_minChambersToFill != 0 && _maxChambersToFill >= _minChambersToFill)
             {

@@ -98,14 +98,10 @@ namespace MapGeneration.Distributors
         public virtual void SpawnItem(ItemType id, int amount)
         {
             if (id == ItemType.None || !InventoryItemLoader.AvailableItems.TryGetValue(id, out var value))
-            {
                 return;
-            }
 
             if (value.PickupDropModel == null || value.PickupDropModel.GetComponent<Rigidbody>() == null)
-            {
                 return;
-            }
 
             int num = 0;
             for (int i = 0; i < amount; i++)
@@ -121,9 +117,6 @@ namespace MapGeneration.Distributors
                     num++;
                 }
 
-                // Spawn at world position without parenting to the chamber: Mirror's
-                // SpawnMessage sends localPosition, so a parented pickup arrives at
-                // clients at (0,0,0).
                 ItemPickupBase itemPickupBase = Object.Instantiate(value.PickupDropModel, transform.position, transform.rotation);
                 itemPickupBase.Info.ItemId = id;
                 itemPickupBase.Info.Weight = value.Weight;
