@@ -142,20 +142,6 @@ namespace LightContainmentZoneDecontamination
             }
         }
 
-        public double NetworkRoundStartTime
-        {
-            get => RoundStartTime;
-            [param: In]
-            set
-            {
-                if (!SyncVarEqual(value, ref RoundStartTime))
-                {
-                    double oldValue = RoundStartTime;
-                    SetSyncVar(value, ref RoundStartTime, 1UL);
-                }
-            }
-        }
-
         private void Awake()
         {
             Singleton = this;

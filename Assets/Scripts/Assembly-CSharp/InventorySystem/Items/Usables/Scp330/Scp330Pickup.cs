@@ -36,18 +36,6 @@ namespace InventorySystem.Items.Usables.Scp330
 
         private int _prevExposed = -1;
 
-        public CandyKindID NetworkExposedCandy
-        {
-            get => ExposedCandy;
-            set
-            {
-                if (!SyncVarEqual(value, ref ExposedCandy))
-                {
-                    NetworkExposedCandy = value;
-                }
-            }
-        }
-
         private void Update()
         {
             if (_prevExposed != (int)ExposedCandy)
