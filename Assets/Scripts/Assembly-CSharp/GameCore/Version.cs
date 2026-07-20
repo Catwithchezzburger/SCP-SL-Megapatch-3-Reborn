@@ -1,3 +1,6 @@
+using System;
+using UnityEngine;
+
 namespace GameCore
 {
     public static class Version
@@ -93,7 +96,40 @@ namespace GameCore
 
         public static bool ListedServerCompatibilityCheck(string serverVersion)
         {
-            return VersionString == serverVersion;
+            try
+            {
+                if (string.IsNullOrEmpty(serverVersion))
+                {
+                    return false;
+                }
+                // Fast path: an exact string match is always compatible.
+                if (VersionString.Equals(serverVersion, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+                // Fall back to numeric comparison so a compatible build with a
+                // different or missing build suffix (e.g. "12.0.2" vs
+                // "12.0.2-...") is still listed and joinable.
+                if (serverVersion.Contains("-"))
+                {
+                    serverVersion = serverVersion.Split('-')[0];
+                }
+                string[] parts = serverVersion.Split('.');
+                if (parts.Length != 3)
+                {
+                    return false;
+                }
+                if (!byte.TryParse(parts[0], out var sMajor) || !byte.TryParse(parts[1], out var sMinor) || !byte.TryParse(parts[2], out var sRevision))
+                {
+                    return false;
+                }
+                return CompatibilityCheck(sMajor, sMinor, sRevision);
+            }
+            catch (Exception ex)
+            {
+                Console.AddLog("Failed to process listed server version: " + ex.Message, Color.red);
+                return false;
+            }
         }
 
         public static bool CompatibilityCheck(byte sMajor, byte sMinor, byte sRevision)

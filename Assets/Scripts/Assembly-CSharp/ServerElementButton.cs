@@ -65,7 +65,8 @@ public class ServerElementButton : MonoBehaviour
                 int.TryParse(split[1], out MaxPlayers);
         }
 
-        bool isFav = FavoriteAndHistory.IsInStorage((FavoriteAndHistory.StorageLocation)1, IpAddress);
+        // v12 keys Favorites/History/last-joined on ServerID.ToString(), not the ip:port string.
+        bool isFav = FavoriteAndHistory.IsInStorage((FavoriteAndHistory.StorageLocation)1, ServerID.ToString());
         SwitchFavorIcon(isFav);
     }
 
@@ -78,9 +79,11 @@ public class ServerElementButton : MonoBehaviour
     {
         newMainMenu.Connect(IpAddress, false);
 
+        // IPHistory (2) is keyed on the raw ip:port for direct-connect recall.
         FavoriteAndHistory.Modify((FavoriteAndHistory.StorageLocation)2, IpAddress, false);
 
-        FavoriteAndHistory.ServerIDLastJoined = ServerName; 
+        // History (0) and the in-game favorite star key on ServerID.ToString().
+        FavoriteAndHistory.ServerIDLastJoined = ServerID.ToString();
         FavoriteAndHistory.Modify((FavoriteAndHistory.StorageLocation)0, FavoriteAndHistory.ServerIDLastJoined, false);
     }
 
@@ -104,16 +107,19 @@ public class ServerElementButton : MonoBehaviour
 
     public void MarkAsFavorite()
     {
-        bool isFav = FavoriteAndHistory.IsInStorage((FavoriteAndHistory.StorageLocation)1, IpAddress);
+        // Favorites are keyed on ServerID.ToString() so the browser tab and the
+        // in-game star (which read ServerID) stay in sync.
+        string serverId = ServerID.ToString();
+        bool isFav = FavoriteAndHistory.IsInStorage((FavoriteAndHistory.StorageLocation)1, serverId);
 
         if (!isFav)
         {
-            FavoriteAndHistory.Modify((FavoriteAndHistory.StorageLocation)1, IpAddress, false);
+            FavoriteAndHistory.Modify((FavoriteAndHistory.StorageLocation)1, serverId, false);
             SwitchFavorIcon(true);
         }
         else
         {
-            FavoriteAndHistory.Modify((FavoriteAndHistory.StorageLocation)1, IpAddress, true);
+            FavoriteAndHistory.Modify((FavoriteAndHistory.StorageLocation)1, serverId, true);
             SwitchFavorIcon(false);
         }
     }

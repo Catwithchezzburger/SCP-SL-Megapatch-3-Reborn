@@ -22,7 +22,7 @@ public static class Escape
         private readonly int _id;
         private readonly string _def;
 
-        public string Text => TranslationReader.Get(_def, _id);
+        public string Text => TranslationReader.Get(TranslationKey, _id, _def);
 
         public EscapeScenarioText(int translationKey, string defaultText)
         {

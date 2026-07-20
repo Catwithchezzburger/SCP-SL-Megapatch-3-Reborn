@@ -69,7 +69,7 @@ public class LoadingScreen : MonoBehaviour
     {
         _currentLoadedScene = scene.name.ToLower();
 
-        if (_currentLoadedScene.Equals("Facility"))
+        if (_currentLoadedScene.Equals("facility"))
         {
             _noFade = true;
             loadingCircle.fillAmount = 0f;
@@ -182,7 +182,7 @@ public class LoadingScreen : MonoBehaviour
                     progress.SetText(description + " 0%", true);
             }
 
-            if (_loadedSet)
+            if (_loaded && !_loadedSet)
             {
                 _loadedSet = true;
                 if (root != null)

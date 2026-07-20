@@ -99,10 +99,10 @@ public class ServerFilter : MonoBehaviour
 					keep = true;
 					break;
 				case ServerTab.Favorites:
-					keep = FavoriteAndHistory.IsInStorage(FavoriteAndHistory.StorageLocation.Favorites, server.ip);
+					keep = FavoriteAndHistory.IsInStorage(FavoriteAndHistory.StorageLocation.Favorites, server.serverId.ToString());
 					break;
 				case ServerTab.History:
-					keep = FavoriteAndHistory.IsInStorage(0, server.ip);
+					keep = FavoriteAndHistory.IsInStorage(0, server.serverId.ToString());
 					break;
 				case ServerTab.Friends:
 					keep = SteamLobby.FriendsServer.Contains($"{server.ip}:{server.port}");
@@ -119,7 +119,7 @@ public class ServerFilter : MonoBehaviour
 		if (_curFilters.Tab == ServerTab.History)
 		{
 			FilteredListItems = FilteredListItems
-				.OrderByDescending(item => FavoriteAndHistory.History.IndexOf(item.ip))
+				.OrderByDescending(item => FavoriteAndHistory.History.IndexOf(item.serverId.ToString()))
 				.ToList();
 		}
 

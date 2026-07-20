@@ -117,6 +117,7 @@ namespace PlayerRoles.PlayableScps.Scp106
             if (changed)
             {
                 HashsetExtensions.ForEach(ToRemove, x => TrackedItems.Remove(x));
+                ToRemove.Clear();
             }
         }
 

@@ -32,6 +32,10 @@ public class FavoriteAndHistory : MonoBehaviour
         StorageEnumToPath[StorageLocation.History] = "history.txt";
         StorageEnumToPath[StorageLocation.Favorites] = "favorites.txt";
         StorageEnumToPath[StorageLocation.IPHistory] = "iphistory.txt";
+
+        Load(StorageLocation.History);
+        Load(StorageLocation.Favorites);
+        Load(StorageLocation.IPHistory);
     }
 
     public static string GetPath(StorageLocation location)
