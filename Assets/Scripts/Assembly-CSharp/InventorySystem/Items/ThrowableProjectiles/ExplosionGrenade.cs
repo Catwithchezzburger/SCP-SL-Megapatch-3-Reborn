@@ -67,6 +67,16 @@ namespace InventorySystem.Items.ThrowableProjectiles
         protected override void PlayExplosionEffects()
         {
             base.PlayExplosionEffects();
+
+            // Client-side camera shake, scaled by distance from the local player to the blast.
+            // Gated on the local hub existing (skipped on a headless dedicated server); Explode
+            // itself must always run, so it stays outside this guard.
+            if (ReferenceHub.TryGetLocalHub(out ReferenceHub localHub) && _shakeOverDistance != null && global::ExplosionCameraShake.singleton != null)
+            {
+                float distance = global::UnityEngine.Vector3.Distance(localHub.transform.position, base.transform.position);
+                global::ExplosionCameraShake.singleton.Shake(_shakeOverDistance.Evaluate(distance));
+            }
+
             Explode(PreviousOwner, base.transform.position, this);
         }
 

@@ -40,7 +40,11 @@ namespace InventorySystem.Items.ThrowableProjectiles
 
         protected override void PlayExplosionEffects()
         {
-            base.PlayExplosionEffects();
+            if (ReferenceHub.TryGetLocalHub(out ReferenceHub localHub))
+            {
+                float distance = global::UnityEngine.Vector3.Distance(base.transform.position, localHub.transform.position);
+                ExplosionCameraShake.singleton.Shake(_shakeOverDistance.Evaluate(distance));
+            }
             if (!global::Mirror.NetworkServer.active)
             {
                 return;

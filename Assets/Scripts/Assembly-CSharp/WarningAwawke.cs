@@ -7,9 +7,18 @@ public class WarningAwawke : MonoBehaviour
 
     private void Awake()
     {
+        if (PlayerPrefsSl.Get("warningToggle", "false") == "true")
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     public void Close()
     {
+        if (toggle != null && toggle.isOn)
+        {
+            PlayerPrefsSl.Set("warningToggle", "true");
+        }
+        gameObject.SetActive(false);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+using MEC;
 using UnityEngine;
 
 public class MenuAnimator : MonoBehaviour
@@ -47,16 +48,90 @@ public class MenuAnimator : MonoBehaviour
 
 	private void Start()
 	{
-		//throw new AnalysisFailedException("An action of type CallManagedFunctionAction at (0x1802E2B3D) is corrupt (Returned local is null but non-void) and cannot be created as IL.");
+		cameraSway = sceneCamera.GetComponent<Animator>();
+		wasEverZoomed = false;
+		Timing.RunCoroutine(_Animate());
+		mms = GetComponent<MainMenuScript>();
 	}
 
 	private void Update()
 	{
-		//throw new AnalysisFailedException("An action of type CallManagedFunctionAction at (0x1802E2C94) is corrupt (Returned local is null but non-void) and cannot be created as IL.");
+		GameObject target = (wasEverZoomed ? focusedPosition : unfocusedPosition);
+		if (retro)
+		{
+			sceneCamera.transform.position = target.transform.position;
+			sceneCamera.transform.rotation = target.transform.rotation;
+		}
+		else
+		{
+			sceneCamera.transform.position = Vector3.Lerp(sceneCamera.transform.position, target.transform.position, Time.deltaTime * 3f);
+			sceneCamera.transform.rotation = Quaternion.Lerp(sceneCamera.transform.rotation, target.transform.rotation, Time.deltaTime * 2f);
+		}
+
+		if (cameraSway != null)
+		{
+			float speed;
+			if (mms.submenus[1].activeSelf || retro)
+			{
+				speed = 0f;
+			}
+			else if (wasEverZoomed && retroArcade.enabled)
+			{
+				speed = 0.3f;
+			}
+			else
+			{
+				speed = 0.7f;
+			}
+			cameraSway.SetFloat("Speed", speed);
+		}
+
+		if (!retroSupported)
+		{
+			return;
+		}
+		retroArcade.enabled = retro;
+		retroPosterize.enabled = retro;
+		if (!Input.anyKeyDown)
+		{
+			return;
+		}
+		if (Input.GetKeyDown(konami[konamiIndex]))
+		{
+			konamiIndex = Mathf.Min(konamiIndex + 1, konami.Length);
+		}
+		else
+		{
+			konamiIndex = 0;
+		}
+		if (konamiIndex != konami.Length)
+		{
+			return;
+		}
+		Debug.Log("GAME START !");
+		GameCore.Console.AddLog("<size=25>GAME START !</size>", (Color)new Color32(255, 255, 255, 255));
+		retro = !retro;
+		MainMenuSoundtrackController soundtrack = Object.FindObjectOfType<MainMenuSoundtrackController>();
+		if (soundtrack != null)
+		{
+			soundtrack.SoundtrackState = ((soundtrack.SoundtrackState == MainMenuSoundtrackController.MenuSoundtrackState.Retro)
+				? MainMenuSoundtrackController.MenuSoundtrackState.MenuJustLoaded
+				: MainMenuSoundtrackController.MenuSoundtrackState.Retro);
+		}
+		konamiIndex = 0;
 	}
 
 	private IEnumerator<float> _Animate()
 	{
-		throw new AnalysisFailedException("An action of type AllocateInstanceAction at (0x1802E32FF) is corrupt (Managed method being called is System.IDisposable.Dispose, not a ctor.) and cannot be created as IL.");
+		while (this != null)
+		{
+			int duration = Random.Range(2, 5);
+			SignBlink[] signs = Object.FindObjectsOfType<SignBlink>();
+			foreach (SignBlink sign in signs)
+			{
+				sign.Play(duration);
+			}
+			yield return Timing.WaitForSeconds(Random.Range(3, 10));
+		}
 	}
 }

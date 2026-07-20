@@ -94,21 +94,25 @@ public class FavoriteAndHistory : MonoBehaviour
             list.Add(id);
         }
 
-        SaveToFile(location);
-
-        if (location == StorageLocation.History)
+        // Trim before persisting so the file never keeps the overflow entries on disk.
+        // Both History and IPHistory are capped (Favorites is unbounded by design).
+        if (location == StorageLocation.History || location == StorageLocation.IPHistory)
         {
             HistoryLimit(location, id);
         }
+
+        SaveToFile(location);
     }
 
     private static void HistoryLimit(StorageLocation location, string id)
     {
         var list = LocationToList[location];
 
-        if (list.Count > MaxHistoryAmount)
+        // Add() appends newest to the end, so index 0 is the oldest entry.
+        // Drain every overflow entry, not just one, in case the list is heavily over the cap.
+        while (list.Count > MaxHistoryAmount)
         {
-            list.RemoveAt(0); 
+            list.RemoveAt(0);
         }
     }
 
