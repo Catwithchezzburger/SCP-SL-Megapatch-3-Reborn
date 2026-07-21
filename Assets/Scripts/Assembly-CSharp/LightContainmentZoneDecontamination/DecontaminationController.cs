@@ -142,20 +142,6 @@ namespace LightContainmentZoneDecontamination
             }
         }
 
-        public double NetworkRoundStartTime
-        {
-            get => RoundStartTime;
-            [param: In]
-            set
-            {
-                if (!SyncVarEqual(value, ref RoundStartTime))
-                {
-                    double oldValue = RoundStartTime;
-                    SetSyncVar(value, ref RoundStartTime, 1UL);
-                }
-            }
-        }
-
         private void Awake()
         {
             Singleton = this;
@@ -213,19 +199,16 @@ namespace LightContainmentZoneDecontamination
 
         private void Start()
         {
-            if (NetworkServer.active)
+            if (NetworkServer.active && ConfigFile.ServerConfig.GetBool("disable_decontamination", false))
             {
-                if (ConfigFile.ServerConfig.GetBool("disable_decontamination", false))
-                {
-                    DecontaminationOverride = DecontaminationStatus.Disabled;
-                }
+                DecontaminationOverride = DecontaminationStatus.Disabled;
+            }
 
-                if (DecontaminationPhases != null)
+            if (DecontaminationPhases != null)
+            {
+                for (int i = 0; i < DecontaminationPhases.Length; i++)
                 {
-                    for (int i = 0; i < DecontaminationPhases.Length; i++)
-                    {
-                        DecontaminationPhases[i].TimeTrigger *= 60f;
-                    }
+                    DecontaminationPhases[i].TimeTrigger *= 60f;
                 }
             }
         }
@@ -351,7 +334,7 @@ namespace LightContainmentZoneDecontamination
             if (RoundStart.singleton == null || RoundStart.singleton.Timer != -1)
                 return;
 
-            NetworkRoundStartTime = NetworkTime.time;
+            RoundStartTime = NetworkTime.time;
         }
 
         private void UpdateTime()

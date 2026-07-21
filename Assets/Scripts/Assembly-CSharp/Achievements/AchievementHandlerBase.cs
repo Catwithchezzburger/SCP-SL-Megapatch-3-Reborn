@@ -31,8 +31,18 @@ namespace Achievements
                     AchievementId = (byte)targetAchievement
                 });
             }
+            else
+            {
+                // Listen-server host: a self-send is pointless, so grant the achievement
+                // directly on the local client instead (remote clients get it via the
+                // AchievementMessage -> AchievementManager.ClientMessageReceived path).
+                ClientAchieve(targetAchievement);
+            }
         }
 
-        protected AchievementHandlerBase() => OnInitialize();
+        protected AchievementHandlerBase()
+        {
+            
+        }
     }
 }

@@ -107,6 +107,7 @@ namespace PlayerRoles.PlayableScps.Scp939.Mimicry
             if (NetworkServer.active && (base.ScpRole.FpcModule.Position - position).sqrMagnitude >= _maxSqrDist)
             {
                 _syncMessage = RpcStateMsg.DestroyedByDistance;
+                Active = false;
                 ServerSendRpc(toAll: true);
             }
         }

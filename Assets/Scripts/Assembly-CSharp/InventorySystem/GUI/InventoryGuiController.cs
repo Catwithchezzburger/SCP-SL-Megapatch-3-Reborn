@@ -93,6 +93,11 @@ namespace InventorySystem.GUI
             {
                 if (IsEnabled)
                     IsEnabled = false;
+
+                if (_displaySettings != null)
+                {
+                    _displaySettings.AmmoModified(hub);
+                }
             }
         }
 

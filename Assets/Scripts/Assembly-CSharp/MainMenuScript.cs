@@ -30,7 +30,7 @@ public class MainMenuScript : MonoBehaviour
                 string host = ip.Substring(1, end - 1);
                 string portStr = ip.Substring(end + 2);
 
-                if (Misc.ValidateIpOrHostname(host, out _, true, true))
+                if (skipValidation || Misc.ValidateIpOrHostname(host, out _, true, true))
                 {
                     if (ushort.TryParse(portStr, out ushort port))
                     {
@@ -49,7 +49,7 @@ public class MainMenuScript : MonoBehaviour
                 string host = ip.Substring(0, colonIndex);
                 string portStr = ip.Substring(colonIndex + 1);
 
-                if (Misc.ValidateIpOrHostname(host, out _, true, true))
+                if (skipValidation || Misc.ValidateIpOrHostname(host, out _, true, true))
                 {
                     if (ushort.TryParse(portStr, out ushort port))
                     {
@@ -62,7 +62,7 @@ public class MainMenuScript : MonoBehaviour
         }
 
         // Regular IP/hostname
-        if (Misc.ValidateIpOrHostname(ip, out _, true, true))
+        if (skipValidation || Misc.ValidateIpOrHostname(ip, out _, true, true))
         {
             _mng.networkAddress = ip;
             Mirror.LiteNetLib4Mirror.LiteNetLib4MirrorTransport.Singleton.port = 7777; // default
@@ -124,6 +124,7 @@ public class MainMenuScript : MonoBehaviour
         SensitivitySettings.RawInput = PlayerPrefsSl.Get("RawInput", false);
         SensitivitySettings.SmoothInput = PlayerPrefsSl.Get("SmoothInput", false);
         SensitivitySettings.SensMultiplier = PlayerPrefsSl.Get("Sens", 1f);
+        SensitivitySettings.AdsReductionMultiplier = PlayerPrefsSl.Get("SensAds", 1f);
     }
 
     private void SetAudioLevelsFromPrefs()

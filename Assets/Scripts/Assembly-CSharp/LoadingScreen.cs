@@ -182,7 +182,7 @@ public class LoadingScreen : MonoBehaviour
                     progress.SetText(description + " 0%", true);
             }
 
-            if (_loadedSet)
+            if (_loaded && !_loadedSet)
             {
                 _loadedSet = true;
                 if (root != null)

@@ -40,7 +40,11 @@ namespace InventorySystem.Items.ThrowableProjectiles
 
         protected override void PlayExplosionEffects()
         {
-            base.PlayExplosionEffects();
+            if (ReferenceHub.TryGetLocalHub(out ReferenceHub localHub))
+            {
+                float distance = global::UnityEngine.Vector3.Distance(base.transform.position, localHub.transform.position);
+                ExplosionCameraShake.singleton.Shake(_shakeOverDistance.Evaluate(distance));
+            }
             if (!global::Mirror.NetworkServer.active)
             {
                 return;
@@ -66,21 +70,21 @@ namespace InventorySystem.Items.ThrowableProjectiles
                 {
                     num /= _surfaceZoneDistanceIntensifier;
                 }
-                bool num2 = global::UnityEngine.Vector3.Dot(hub.PlayerCameraReference.forward, vector.normalized) >= 0.5f;
-                float num3 = (num2 ? _blindingOverDistance.Evaluate(num) : _turnedAwayBlindingDistance.Evaluate(num));
-                float num4 = (num2 ? num3 : _turnedAwayDeafenDurationOverDistance.Evaluate(num));
-                float num5 = (num2 ? _deafenDurationOverDistance.Evaluate(num) : (num4 * _blindTime));
-                if (num5 > _minimalEffectDuration)
+                bool facing = global::UnityEngine.Vector3.Dot(hub.PlayerCameraReference.forward, vector.normalized) >= 0.5f;
+                float blindFactor = (facing ? _blindingOverDistance.Evaluate(num) : _turnedAwayBlindingDistance.Evaluate(num));
+                float deafenFactor = (facing ? _deafenDurationOverDistance.Evaluate(num) : _turnedAwayDeafenDurationOverDistance.Evaluate(num));
+                float deafenDuration = deafenFactor * _blindTime;
+                if (deafenDuration > _minimalEffectDuration)
                 {
-                    hub.playerEffectsController.EnableEffect<global::CustomPlayerEffects.Deafened>(num5, addDuration: true);
+                    hub.playerEffectsController.EnableEffect<global::CustomPlayerEffects.Deafened>(deafenDuration, addDuration: true);
                 }
-                if (num3 > _minimalEffectDuration)
+                if (blindFactor > _minimalEffectDuration)
                 {
-                    hub.playerEffectsController.EnableEffect<global::CustomPlayerEffects.Flashed>(num3 * _blindTime, addDuration: true);
+                    hub.playerEffectsController.EnableEffect<global::CustomPlayerEffects.Flashed>(blindFactor * _blindTime, addDuration: true);
                 }
                 if (num <= 10f)
                 {
-                    hub.playerEffectsController.EnableEffect<global::CustomPlayerEffects.Blinded>(num4 * _blindTime + _additionalBlurDuration * num4, addDuration: true);
+                    hub.playerEffectsController.EnableEffect<global::CustomPlayerEffects.Blinded>(blindFactor * _blindTime + _additionalBlurDuration * blindFactor, addDuration: true);
                 }
             }
         }

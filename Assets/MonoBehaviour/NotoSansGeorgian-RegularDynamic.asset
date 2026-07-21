@@ -36,10 +36,10 @@ MonoBehaviour:
     m_StrikethroughThickness: 4
     m_TabWidth: 21
   m_Material: {fileID: 2100000, guid: a0994e4f75cccea4386db50983440180, type: 2}
-  m_SourceFontFileGUID: b7b029dfb5bf3c14aad3ac61e28a4c54
+  m_SourceFontFileGUID: 76432f04c64f629429f46754b6d9019f
   m_CreationSettings:
     sourceFontFileName: 
-    sourceFontFileGUID: b7b029dfb5bf3c14aad3ac61e28a4c54
+    sourceFontFileGUID: 76432f04c64f629429f46754b6d9019f
     faceIndex: 0
     pointSizeSamplingMode: 0
     pointSize: 80
@@ -58,7 +58,7 @@ MonoBehaviour:
     includeFontFeatures: 0
   m_SourceFontFile: {fileID: 0}
   m_SourceFontFilePath: 
-  m_AtlasPopulationMode: 1
+  m_AtlasPopulationMode: 2
   InternalDynamicOS: 0
   m_GlyphTable: []
   m_CharacterTable: []

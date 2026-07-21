@@ -21,9 +21,19 @@ public class TeslaGateController : NetworkBehaviour
                 hub.gameConsoleTransmission.SendToClient($"Received invalid tesla gate id {msg.TeslaGateId}!", "red");
                 return;
             }
-            if (Vector3.Distance(Singleton.TeslaGates[msg.TeslaGateId].transform.position, hub.transform.position) > Singleton.TeslaGates[msg.TeslaGateId].sizeOfTrigger * 2.2f)
+            TeslaGate teslaGate = Singleton.TeslaGates[msg.TeslaGateId];
+            if (Vector3.Distance(teslaGate.transform.position, hub.transform.position) > teslaGate.sizeOfTrigger * 2.2f)
             {
                 hub.gameConsoleTransmission.SendToClient("You are too far from a tesla gate!", "red");
+                return;
+            }
+            // Hardening (deviation from v12): only accept a hit while the gate is actually
+            // discharging. Tesla damage is client-authoritative and can only ever hit the
+            // sender, so the exploit ceiling is self-termination near a gate; gating on
+            // InProgress rejects hits sent outside a real shock without touching the
+            // client-side hurt-window (which stays authoritative to avoid rejecting valid hits).
+            if (!teslaGate.InProgress)
+            {
                 return;
             }
             DamageHandlerBase.CassieAnnouncement cassieAnnouncement = new DamageHandlerBase.CassieAnnouncement();

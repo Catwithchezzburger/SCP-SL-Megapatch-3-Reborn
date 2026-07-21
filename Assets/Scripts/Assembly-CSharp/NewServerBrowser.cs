@@ -142,10 +142,11 @@ public class NewServerBrowser : MonoBehaviour
             if (authStatus == AuthStatusType.PlatformAuthFailure)
                 break;
 
-            // Wait until central auth completes — the list request needs a valid api token.
             while (authStatus != AuthStatusType.Success)
             {
-                set_LoadingErrorMessage(TranslationReader.Get("NewMainMenu", 67, "AUTHENTICATING"));
+                set_LoadingErrorMessage(authStatus == AuthStatusType.Failure
+                    ? TranslationReader.Get("NewMainMenu", 70, "<color=red>Connection failure (Check console for details)</color>")
+                    : TranslationReader.Get("NewMainMenu", 67, "AUTHENTICATING"));
                 if (!_threadStarted || !_redownload) break;
                 Thread.Sleep(150);
                 authStatus = CentralAuthManager.AuthStatusType;

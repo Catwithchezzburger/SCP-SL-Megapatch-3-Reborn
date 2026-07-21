@@ -20,6 +20,9 @@ namespace CommandSystem.Commands.Console
                 return false;
             }
 
+            CustomNetworkManager.triggerReconnectTime = 0f;
+            CustomLiteNetLib4MirrorTransport.ClientChallengeState = ChallengeState.None;
+
             if (!NetworkServer.active)
             {
                 NetworkManager.singleton.StopClient();

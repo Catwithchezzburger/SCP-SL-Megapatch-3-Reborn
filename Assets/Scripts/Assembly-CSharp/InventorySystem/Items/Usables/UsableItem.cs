@@ -41,6 +41,10 @@ namespace InventorySystem.Items.Usables
                 if (RemainingCooldown <= 0f)
                     return string.Empty;
 
+                // The countdown lives in this getter: the drawer HUD reads AlertText
+                // every frame while the item is held, ticking the cooldown down.
+                RemainingCooldown -= Time.deltaTime;
+
                 return string.Format(_cooldownFormat,
                     TimeSpan.FromSeconds(RemainingCooldown).ToString("mm\\:ss"),
                     Name);
@@ -131,7 +135,10 @@ namespace InventorySystem.Items.Usables
                 _useKey = NewInput.GetKey(ActionName.Shoot);
                 _cancelKey = NewInput.GetKey(ActionName.Zoom);
 
-                _cooldownFormat = TranslationReader.Get("Facility", 33, "{0} cooldown remaining.");
+                _cooldownFormat = TranslationReader.Get("Facility", 33, "Wait {0} until you can use {1} again.");
+                // Re-wrap the placeholders so the timer value and item name render in the
+                // alert's own colour while the surrounding text stays white.
+                _cooldownFormat = string.Format(_cooldownFormat, "</color>{0}<color=white>", "</color>{1}<color=white>");
                 _cooldownFormat = $"<color=white>{_cooldownFormat}</color>";
 
                 Translation = new ItemTranslationReader(ItemTypeId);

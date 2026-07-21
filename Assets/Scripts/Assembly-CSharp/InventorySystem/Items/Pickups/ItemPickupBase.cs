@@ -107,6 +107,11 @@ namespace InventorySystem.Items.Pickups
             global::InventorySystem.Items.Pickups.ItemPickupBase.OnPickupAdded?.Invoke(this);
         }
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+        }
+
         protected virtual void OnDestroy()
         {
             PhysicsModule?.DestroyModule();
